@@ -41,6 +41,17 @@ sub next {
         }) } @{$self->{table_names}};
     }
 }
+sub all {
+    my $self = shift;
+
+    my $result = [];
+    while(my @tables = $self->next) {
+        my %table = map {$_->{table_name} => $_} @tables;
+        push @$result, \%table;
+    }
+
+    return wantarray ? @$result : $result;
+}
 
 sub _seperate_rows {
     my ($self, $row) = @_;

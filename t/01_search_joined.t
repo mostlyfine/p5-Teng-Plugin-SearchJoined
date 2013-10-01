@@ -62,6 +62,28 @@ subtest 'double' => sub {
     is $count, 2;
 };
 
+subtest 'all' => sub {
+    my $itr = $db->search_joined(user_item => [
+        user => {'user_item.user_id' => 'user.id'},
+    ], {
+        'user.id' => 1,
+    }, {
+        order_by => 'user_item.item_id',
+    });
+
+    isa_ok $itr, 'Teng::Plugin::SearchJoined::Iterator';
+
+    my $result = $itr->all;
+    isa_ok $result, 'ARRAY';
+    foreach my $table (@$result) {
+        isa_ok $table, 'HASH';
+        my ($user_item, $user) = ($table->{user_item} , $table->{user});
+        isa_ok $user_item, 'Mock::BasicJoin::Row::UserItem';
+        isa_ok $user,      'Mock::BasicJoin::Row::User';
+        ok $user->name, 'aaa';
+    }
+};
+
 subtest 'triple' => sub {
     my $itr = $db->search_joined(user_item => [
         user => {'user_item.user_id' => 'user.id'},
